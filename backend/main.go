@@ -1,8 +1,8 @@
 package main
 
 import (
-	"demomovie/db"
-	"demomovie/routes"
+	"backend/db"
+	"backend/routes"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

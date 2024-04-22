@@ -28,97 +28,95 @@ const AddMovieDialog = ({ open, setOpen, editData, movies }) => {
         setError({});
     }, [editData, open]);
 
-    const validateForm = () => {
-        const { title, year } = formData;
-        const newErrors = {};
-    
-        if (!title.trim()) {
-            newErrors.title = 'Title is required.';
-        } else if (editData && title.toLowerCase() !== editData.Title.toLowerCase() && movies.some(movie => movie.Title.toLowerCase() === title.toLowerCase())) {
-            newErrors.title = 'Duplicate movie name. Please enter a unique name.';
-        }
-    
-        if (!year || isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
-            newErrors.year = 'Please enter a valid year between 1900 and the current year.';
-        } else {
-            delete newErrors.year; 
-        }
-    
-        setError(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-    
-
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
+
         setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
+            ...prevData,
+            [name]: value,
         }));
 
-        if (error[name]) {
-            setError((prevErrors) => ({
-                ...prevErrors,
-                [name]: '',
-            }));
+        const newErrors = { ...error };
+
+        if (name === 'title') {
+            if (!value.trim()) {
+                newErrors.title = 'Title is required.';
+            } else if (movies.some(movie => movie.Title.toLowerCase() === value.toLowerCase())) {
+                newErrors.title = 'Movie name already exists';
+            } else {
+                delete newErrors.title;
+            }
         }
-      };
+
+        if (name === 'year') {
+            const yearValue = parseInt(value, 10);
+            if (!value || isNaN(yearValue) || yearValue < 1990 || yearValue > new Date().getFullYear()) {
+                newErrors.year = 'Please enter a valid year between 1900 and the current year.';
+            } else {
+                delete newErrors.year;
+            }
+        }
+
+        setError(newErrors);
+    };
+
 
     const handleClose = () => {
         setOpen(false);
         setFormData({
-            title:  '',
-            genre:  '',
-            year:  '',
-            rating:  ''
+            title: '',
+            genre: '',
+            year: '',
+            rating: ''
         })
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) {
-            return;
-        }
+        const isValid = Object.keys(error).length === 0;
 
-        const payload = {
-            ...formData,
-            year: parseInt(formData.year),
-            rating: parseInt(formData.rating)
-        };
-  
-        try {
-            if(editData){
-                const res = await dispatch(updateMovieData(payload , editData?.ID));
-                if (res.ok) {
-                    setOpen(false);
-                    setFormData({
-                        title: '',
-                        genre: '',
-                        year: '',
-                        rate: ''
-                    })
-                    handleClose();
-                }
+        if (isValid) {
 
-            }else{
-                const res = await dispatch(addMovieData(payload));
-                if (res.ok) {
-                    setOpen(false);
-                    setFormData({
-                        title: '',
-                        genre: '',
-                        year: '',
-                        rate: ''
-                    })
-                    handleClose();
+            const payload = {
+                ...formData,
+                year: parseInt(formData.year),
+                rating: parseInt(formData.rating)
+            };
+
+            try {
+                if (editData) {
+                    const res = await dispatch(updateMovieData(payload, editData?.ID));
+                    if (res.ok) {
+                        setOpen(false);
+                        setFormData({
+                            title: '',
+                            genre: '',
+                            year: '',
+                            rate: ''
+                        })
+                        handleClose();
+                    }
+
+                } else {
+                    const res = await dispatch(addMovieData(payload));
+                    if (res.ok) {
+                        setOpen(false);
+                        setFormData({
+                            title: '',
+                            genre: '',
+                            year: '',
+                            rate: ''
+                        })
+                        handleClose();
+                    }
                 }
+            } catch (error) {
+                console.error('Error submitting form:', error);
             }
-        } catch (error) {
-            console.error('Error submitting form:', error);
+
         }
-        
+
     };
 
     return (

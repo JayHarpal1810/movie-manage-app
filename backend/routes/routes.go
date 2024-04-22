@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"demomovie/db"
-	"demomovie/models"
+	"backend/db"
+	"backend/models"
 	"time"
 
 	"github.com/labstack/echo/v4"

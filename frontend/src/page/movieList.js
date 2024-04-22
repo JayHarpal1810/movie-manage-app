@@ -6,6 +6,7 @@ import AddMovieDialog from '../component/addMovieDailog';
 import ConfirmDailog from '../component/ConfirmBox';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 const MovieList = () => {
   const dispatch = useDispatch();
@@ -19,8 +20,6 @@ const MovieList = () => {
 
   const [yearFilter, setYearFilter] = useState('All');
   const [titleSearch, setTitleSearch] = useState('');
-
-  const [value, setValue] = useState();
 
   const moviesPerPage = 12;
 
@@ -63,6 +62,11 @@ const MovieList = () => {
     setTitleSearch(e.target.value);
   };
 
+  const clearFilters = () => {
+    setYearFilter('All');
+    setTitleSearch('');
+  };
+
   const filterMovies = (movie) => {
     const yearMatch = yearFilter === 'All' || movie.Year === parseInt(yearFilter);
     const titleMatch = movie.Title.toLowerCase().includes(titleSearch.toLowerCase());
@@ -100,6 +104,12 @@ const MovieList = () => {
               value={titleSearch}
               onChange={handleTitleSearchChange}
             />
+             <IconButton
+              variant="outlined"
+              onClick={clearFilters}
+            >
+              <FilterAltOffIcon color='info' onClick={clearFilters}/>
+            </IconButton>
           </Stack>
           <Button
             variant="contained"

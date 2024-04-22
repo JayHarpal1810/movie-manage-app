@@ -7,8 +7,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"demomovie/config"
-	"demomovie/models"
+	"backend/config"
+	"backend/models"
 )
 
 var DB *gorm.DB
